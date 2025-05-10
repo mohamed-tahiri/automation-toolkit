@@ -10,30 +10,31 @@ print_usage() {
   cat <<EOF
 
 ╭──────────────────────────────────────────────────────╮
-│              🛠  AUTOMATION TOOLKIT CLI              │
+│            🛠  AUTOMATION TOOLKIT THR. CLI            │
 ╰──────────────────────────────────────────────────────╯
 Usage:
   ./toolkit.sh <section> <action> [options]
 
 Sections & Actions disponibles :
 
-  install     php <version>         → Installe PHP
-      	      java <version>        → Installe Java
-              python <verion>       → Installe Python
-              git                   → Installe Git
+  install     php <version>         	→ Installe PHP
+      	      java <version>        	→ Installe Java
+              python <verion>       	→ Installe Python
+	      node <version>	    	→ Installe node
+	      aws		    	→ Installe AWS 
+              git                   	→ Installe Git
+	      docker		    	→ Installe Docker
+	      kubernetes	    	→ Installe kubernetes
+	      all 		    	→ Installe tous les outils
+		[--skip-if-installed]  : ignorer si déjà installé
 
-  configure   nginx-php             → Configure Nginx + PHP
+  configure   nginx-php             	→ Configure Nginx + PHP
 
-  scripts     backup <src> [dest]   → Sauvegarde un dossier
-              cleanup               → Nettoyage système
-              deploy                → Déploie une app
+  scripts     backup <src> [dest]   	→ Sauvegarde un dossier
+              cleanup               	→ Nettoyage système
+              deploy                	→ Déploie une app
 
   utils       version-check         → Vérifie les versions des outils
-
-Exemples :
-  ./toolkit.sh install php 8.2
-  ./toolkit.sh scripts backup /var/www ~/backups
-  ./toolkit.sh configure nginx-php
 
 EOF
 }
@@ -51,10 +52,15 @@ shift 2
 case "$SECTION" in
   install)
     case "$ACTION" in
-      php)     bash "$SCRIPT_DIR/install/install-php.sh" "$@" ;;
-      java)    bash "$SCRIPT_DIR/install/install-java.sh" "$@" ;;
-      python)  bash "$SCRIPT_DIR/install/install-python.sh" "$@" ;;
-      git)     bash "$SCRIPT_DIR/install/install-git.sh" ;;
+      php)     	 	bash "$SCRIPT_DIR/install/install-php.sh" "$@" ;;
+      java)    	 	bash "$SCRIPT_DIR/install/install-java.sh" "$@" ;;
+      python)  	 	bash "$SCRIPT_DIR/install/install-python.sh" "$@" ;;
+      git)    	 	bash "$SCRIPT_DIR/install/install-git.sh" ;;
+      aws)       	bash "$SCRIPT_DIR/install/install-aws.sh" ;;
+      kubernetes)	bash "$SCRIPT_DIR/install/install-kubernetes.sh" ;;
+      node)		bash "$SCRIPT_DIR/install/install-node.sh" "$@" ;;
+      docker)		bash "$SCRIPT_DIR/install/install-docker.sh" ;; 
+      all) 		bash "$SCRIPT_DIR/install/install-all.sh" "$@" ;;
       *)       ERROR "Action inconnue pour 'install': $ACTION"; exit 1 ;;
     esac
     ;;

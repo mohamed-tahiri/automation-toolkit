@@ -17,22 +17,57 @@ Usage:
 
 Sections & Actions disponibles :
 
-  install     php <version>         	→ Installe PHP
-      	      java <version>        	→ Installe Java
-              python <verion>       	→ Installe Python
-	      node <version>	    	→ Installe node
-	      aws		    	→ Installe AWS 
-              git                   	→ Installe Git
-	      docker		    	→ Installe Docker
-	      kubernetes	    	→ Installe kubernetes
-	      all 		    	→ Installe tous les outils
-		[--skip-if-installed]  : ignorer si déjà installé
+  install     php <version>         	      		      → Installe PHP
+      	      java <version>        	      		      → Installe Java
+              python <verion>       	      		      → Installe Python
+	      node <version>	    	      		      → Installe node
+	      aws		              		      → Installe AWS 
+              git                   	      		      → Installe Git
+	      docker		    	      		      → Installe Docker
+	      kubernetes	    	      		      → Installe kubernetes
+	      all [options] 		      		      → Installe tous les outils
+					       			 Options :
+						 		   --skip-if-installed  : ignorer si déjà installé
 
-  configure   nginx-php             	→ Configure Nginx + PHP
+    start      node <framework>  <project-name> [options]     → Initialise un projet Node.js
+                                               			 Frameworks disponibles :
+                                                 		   - mern
+                                                 		   - mean
+                                                 		   - nestjs
+                                                 		   - reactjs
+                                                 		   - angular
+                                                 		   - expressjs
+                                               			 Options :
+                                                 		   --version <x.x.x>        : Spécifie la version Node.js
+                                                 		   --with-docker            : Ajoute une configuration Docker
+                                                 		   --with-db <mongo|mysql>  : Ajoute la config base de données
 
-  scripts     backup <src> [dest]   	→ Sauvegarde un dossier
-              cleanup               	→ Nettoyage système
-              deploy                	→ Déploie une app
+             php <framework> <project-name> [options]         → Initialise un projet PHP
+                                                 		 Frameworks disponibles :
+                                                 		   - prestashop
+                                                 		   - drupal
+                                                 		   - sylius
+                                                 		   - symfony
+                                                 		   - laravel
+                                               			 Options :
+                                                 		   --version <x.x>          : Spécifie la version PHP
+                                                 		   --with-docker            : Ajoute une configuration Docker
+                                                 		   --with-db <mysql|pgsql>  : Ajoute la config base de données
+
+             java <framework> <project-name> [options]        → Initialise un projet Java
+                                               			 Frameworks disponibles :
+                                                 		   - spring
+                                                 		   - spring-angular
+                                               			 Options :
+                                                 		   --jdk <version>          : Spécifie la version du JDK
+                                                 		   --with-docker            : Ajoute une configuration Docker
+                                                 		   --with-db <mysql|pgsql>  : Ajoute la config base de données
+  
+  configure   nginx-php             	    		      → Configure Nginx + PHP
+
+  scripts     backup <src> [dest]   	    		      → Sauvegarde un dossier
+              cleanup               	    		      → Nettoyage système
+              deploy                	    		      → Déploie une app
 
   utils       version-check         → Vérifie les versions des outils
 
@@ -61,7 +96,15 @@ case "$SECTION" in
       node)		bash "$SCRIPT_DIR/install/install-node.sh" "$@" ;;
       docker)		bash "$SCRIPT_DIR/install/install-docker.sh" ;; 
       all) 		bash "$SCRIPT_DIR/install/install-all.sh" "$@" ;;
-      *)       ERROR "Action inconnue pour 'install': $ACTION"; exit 1 ;;
+      *)       		ERROR "Action inconnue pour 'install': $ACTION"; exit 1 ;;
+    esac
+    ;;
+    start)
+    case $ACTION in
+      node)		bash "$SCRIPT_DIR/start/node.sh" "$@" ;;
+      php)		bash "$SCRIPT_DIR/start/php.sh" "$@" ;;
+      java)		bash "$SCRIPT_DIR/start/java.sh" "$@" ;;
+      *)		ERROR "Projet inconnu : $ACTION"; exit 1 ;;
     esac
     ;;
   configure)
@@ -72,10 +115,10 @@ case "$SECTION" in
     ;;
   scripts)
     case "$ACTION" in
-      backup)  bash "$SCRIPT_DIR/scripts/backup.sh" "$@" ;;
-      cleanup) bash "$SCRIPT_DIR/scripts/cleanup.sh" ;;
-      deploy)  bash "$SCRIPT_DIR/scripts/deploy-app.sh" ;;
-      *)       ERROR "Action inconnue pour 'scripts': $ACTION"; exit 1 ;;
+      backup)  	bash "$SCRIPT_DIR/scripts/backup.sh" "$@" ;;
+      cleanup) 	bash "$SCRIPT_DIR/scripts/cleanup.sh" ;;
+      deploy)  	bash "$SCRIPT_DIR/scripts/deploy-app.sh" ;;
+      *)       	ERROR "Action inconnue pour 'scripts': $ACTION"; exit 1 ;;
     esac
     ;;
   utils)

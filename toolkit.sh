@@ -40,7 +40,7 @@ Sections & Actions disponibles :
                                                			 Options :
                                                  		   --version <x.x.x>        : Spécifie la version Node.js
                                                  		   --with-docker            : Ajoute une configuration Docker
-                                                 		   --with-db <mongo|mysql>  : Ajoute la config base de données
+                                                 		   --with-db <mongodb|mysql|postgres>  : Ajoute la config base de données
 
              php <framework> <project-name> [options]         → Initialise un projet PHP
                                                  		 Frameworks disponibles :
@@ -52,7 +52,7 @@ Sections & Actions disponibles :
                                                			 Options :
                                                  		   --version <x.x>          : Spécifie la version PHP
                                                  		   --with-docker            : Ajoute une configuration Docker
-                                                 		   --with-db <mysql|pgsql>  : Ajoute la config base de données
+                                                 		   --with-db <mongodb|mysql|postgres>  : Ajoute la config base de données
 
              java <framework> <project-name> [options]        → Initialise un projet Java
                                                			 Frameworks disponibles :
@@ -61,7 +61,7 @@ Sections & Actions disponibles :
                                                			 Options :
                                                  		   --jdk <version>          : Spécifie la version du JDK
                                                  		   --with-docker            : Ajoute une configuration Docker
-                                                 		   --with-db <mysql|pgsql>  : Ajoute la config base de données
+                                                 		   --with-db <mongodb|mysql|postgres>  : Ajoute la config base de données
   
   configure   nginx-php             	    		      → Configure Nginx + PHP
 

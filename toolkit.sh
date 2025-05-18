@@ -109,7 +109,7 @@ case "$SECTION" in
     ;;
   configure)
     case "$ACTION" in
-      nginx-php) bash "$SCRIPT_DIR/configure/setup-nginx-php.sh" ;;
+      nginx-php) bash "$SCRIPT_DIR/configure/nginx-php.sh" "$@"  ;;
       *)         ERROR "Action inconnue pour 'configure': $ACTION"; exit 1 ;;
     esac
     ;;

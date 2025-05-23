@@ -1,20 +1,22 @@
 #!/bin/bash
 
-# Usage: ./nginx-php.sh <project-name> <project-path> [php-version]
-# Example: ./nginx-php.sh my-site ~/automation-toolkit/my-site 8.2
+# Usage: ./nginx-php.sh <project-name> <project-path> [options]
+# Example: ./nginx-php.sh my-site ~/automation-toolkit/my-site 
 
 set -euo pipefail
 
+# Detect PHP version installed
+PHP_VERSION=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;")
+
 # Validate arguments
 if [ $# -lt 2 ]; then
-  echo "❌ Usage: $0 <project-name> <project-path> [php-version]"
-  echo "Example: $0 my-site ~/automation-toolkit/my-site 8.2"
+  echo "❌ Usage: $0 <project-name> <project-path> [options]"
+  echo "Example: $0 my-site ~/automation-toolkit/my-site "
   exit 1
 fi
 
 PROJECT_NAME="$1"
 PROJECT_ROOT="$(realpath "$2")"
-PHP_VERSION="${3:-8.1}"  # Default PHP version 8.1
 PUBLIC_DIR="$PROJECT_ROOT/public"
 
 # Fallback to project root if /public does not exist
@@ -36,21 +38,8 @@ if ! command -v nginx &>/dev/null; then
   echo "📦 Installing Nginx..."
   sudo apt update
   sudo apt install -y nginx
-fi
-
-# Install PHP-FPM and required extensions if missing
-if ! dpkg -l | grep -q "php${PHP_VERSION}-fpm"; then
-  echo "📦 Installing PHP ${PHP_VERSION}-FPM and extensions..."
-  sudo apt install -y \
-    php${PHP_VERSION}-fpm php${PHP_VERSION}-cli php${PHP_VERSION}-common \
-    php${PHP_VERSION}-curl php${PHP_VERSION}-mbstring php${PHP_VERSION}-xml \
-    php${PHP_VERSION}-zip php${PHP_VERSION}-sqlite3 php${PHP_VERSION}-mysql
-fi
-
-# Start PHP-FPM if not running
-if ! sudo systemctl is-active --quiet php${PHP_VERSION}-fpm; then
-  echo "🚀 Starting PHP ${PHP_VERSION}-FPM..."
-  sudo systemctl start php${PHP_VERSION}-fpm
+  sudo systemctl start nginx
+  sudo systemctl enable nginx
 fi
 
 # Install Symfony CLI if not found
@@ -122,7 +111,7 @@ esac
 
 sleep 3  # wait a bit for server to start
 
-echo "⚙️ Creating Nginx config for '$PROJECT_NAME' (reverse proxy to port $PHP_PORT)..."
+echo "⚙️ Creating Nginx config for '$PROJECT_NAME' ..."
 
 sudo tee "$NGINX_AVAILABLE" > /dev/null <<EOF
 server {

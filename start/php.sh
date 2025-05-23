@@ -57,13 +57,8 @@ fi
 # ========== INSTALL PHP + EXTENSIONS ==========
 echo "📦 Installation de PHP $PHP_VERSION pour $FRAMEWORK ($PROJECT_NAME)"
 
-sudo apt update
-sudo apt install -y php$PHP_VERSION php$PHP_VERSION-cli php$PHP_VERSION-common
-
-EXTENSIONS=(dom gd mbstring pdo curl xml zip)
-for ext in "${EXTENSIONS[@]}"; do
-  sudo apt install -y php$PHP_VERSION-$ext
-done
+pwd
+./toolkit.sh install php $PHP_VERSION
 
 # ========== CREATE PROJECT DIRECTORY ==========
 mkdir -p "$PROJECT_NAME"
@@ -71,6 +66,36 @@ cd "$PROJECT_NAME" || exit
 
 # ========== INIT COMPOSER PROJECT ==========
 echo "🎯 Initialisation du projet $FRAMEWORK..."
+
+# Check if composer is installed
+if ! command -v composer &> /dev/null; then
+  echo "🔧 Installing Composer..."
+
+  # Download Composer
+  php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+  php composer-setup.php --install-dir=/tmp --filename=composer
+  rm composer-setup.php
+
+  # Move to global path if sudo is available
+  if sudo -n true 2>/dev/null; then
+    sudo mv /tmp/composer /usr/local/bin/composer
+  else
+    mv /tmp/composer $HOME/composer
+    echo 'export PATH="$HOME:$PATH"' >> ~/.bashrc
+    echo 'alias composer="$HOME/composer"' >> ~/.bashrc
+    source ~/.bashrc
+  fi
+
+  echo "✅ Composer installed"
+else
+  echo "✅ Composer already installed"
+fi
+
+# Ensure unzip is installed
+if ! command -v unzip &> /dev/null; then
+  echo "📦 Installing unzip..."
+  sudo apt update && sudo apt install unzip -y
+fi
 
 case $FRAMEWORK in
   laravel)

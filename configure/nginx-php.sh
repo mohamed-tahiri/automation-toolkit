@@ -86,6 +86,7 @@ echo "🛑 Killing any process using port $PHP_PORT"
 sudo fuser -k "${PHP_PORT}/tcp" || true
 
 # Start the appropriate PHP server based on project type
+echo $PROJECT_TYPE
 case $PROJECT_TYPE in
   symfony)
     echo "🚀 Starting Symfony local server on port $PHP_PORT..."
@@ -97,11 +98,11 @@ case $PROJECT_TYPE in
     ;;
   drupal)
     echo "🚀 Starting PHP built-in server for Drupal on port $PHP_PORT..."
-    nohup php -S 127.0.0.1:$PHP_PORT -t "$PUBLIC_DIR" > "$LOG_FILE" 2>&1 &
+    nohup php -S 0.0.0.0:$PHP_PORT -t "$PROJECT_ROOT/web" > "$LOG_FILE" 2>&1 &
     ;;
   php)
     echo "🚀 Starting generic PHP built-in server on port $PHP_PORT..."
-    nohup php -S 127.0.0.1:$PHP_PORT -t "$PUBLIC_DIR" > "$LOG_FILE" 2>&1 &
+    nohup php -S 0.0.0.0:$PHP_PORT -t "$PROJECT_ROOT/web" > "$LOG_FILE" 2>&1 &
     ;;
   *)
     echo "❌ Unknown project type. Cannot start server automatically."

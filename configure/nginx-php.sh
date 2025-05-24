@@ -18,6 +18,7 @@ fi
 PROJECT_NAME="$1"
 PROJECT_ROOT="$(realpath "$2")"
 PUBLIC_DIR="$PROJECT_ROOT/public"
+PUBLIC_WEB="$PROJECT_ROOT/web"
 
 # Fallback to project root if /public does not exist
 if [ ! -d "$PUBLIC_DIR" ]; then
@@ -65,12 +66,15 @@ sudo chmod 664 "$LOG_FILE"
 sudo chown "$(whoami)":"$(whoami)" "$LOG_FILE"
 
 # Detect project type by checking composer.json dependencies
+# Detect project type by checking composer.json dependencies
 if [ -f "$PROJECT_ROOT/composer.json" ]; then
-  if grep -q '"symfony/symfony"' "$PROJECT_ROOT/composer.json" || grep -q '"symfony/framework-bundle"' "$PROJECT_ROOT/composer.json"; then
+  if grep -q '"symfony/symfony"' "$PROJECT_ROOT/composer.json"; then
     PROJECT_TYPE="symfony"
+  elif grep -q '"prestashop/prestashop"' "$PROJECT_ROOT/composer.json"; then
+    PROJECT_TYPE="prestashop"
   elif grep -q '"laravel/framework"' "$PROJECT_ROOT/composer.json"; then
     PROJECT_TYPE="laravel"
-  elif grep -q '"drupal/core"' "$PROJECT_ROOT/composer.json"; then
+  elif grep -q '"drupal/drupal"' "$PROJECT_ROOT/composer.json"; then
     PROJECT_TYPE="drupal"
   else
     PROJECT_TYPE="php"
@@ -86,7 +90,6 @@ echo "🛑 Killing any process using port $PHP_PORT"
 sudo fuser -k "${PHP_PORT}/tcp" || true
 
 # Start the appropriate PHP server based on project type
-echo $PROJECT_TYPE
 case $PROJECT_TYPE in
   symfony)
     echo "🚀 Starting Symfony local server on port $PHP_PORT..."
@@ -96,13 +99,17 @@ case $PROJECT_TYPE in
     echo "🚀 Starting Laravel artisan serve on port $PHP_PORT..."
     nohup php "$PROJECT_ROOT/artisan" serve --host=127.0.0.1 --port=$PHP_PORT > "$LOG_FILE" 2>&1 &
     ;;
+  prestashop)
+    echo "🚀 Starting Prestashop project a serve on port $PHP_PORT..."
+    nohup php -S 0.0.0.0:$PHP_PORT -t $PROJECT_ROOT > "$LOG_FILE" 2>&1 & 
+    ;;
   drupal)
-    echo "🚀 Starting PHP built-in server for Drupal on port $PHP_PORT..."
+    echo "🚀 Starting Drupal project a serve on port $PHP_PORT..."
     nohup php -S 0.0.0.0:$PHP_PORT -t "$PROJECT_ROOT/web" > "$LOG_FILE" 2>&1 &
     ;;
   php)
     echo "🚀 Starting generic PHP built-in server on port $PHP_PORT..."
-    nohup php -S 0.0.0.0:$PHP_PORT -t "$PROJECT_ROOT/web" > "$LOG_FILE" 2>&1 &
+    nohup php -S 0.0.0.0:$PHP_PORT > "$LOG_FILE" 2>&1 &
     ;;
   *)
     echo "❌ Unknown project type. Cannot start server automatically."
